@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="tr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mirza ❤️ Kayra | Hikayemiz</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Romantik ve Modern Tipografi -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['"Playfair Display"', '"Cormorant Garamond"', 'serif'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        night: '#090712',
+                        burgundy: '#2a0818',
+                        rosegold: '#e8b4b8',
+                        goldwarm: '#f3d2b3',
+                        velvet: '#170d1f'
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'shimmer': 'shimmer 3s linear infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-12px)' },
+                        },
+                        shimmer: {
+                            '0%': { backgroundPosition: '200% center' },
+                            '100%': { backgroundPosition: '-200% center' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Özel Kaydırma Çubuğu ve Romantik Arka Plan Dokusu */
+        body {
+            background-color: #090712;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(136, 19, 55, 0.28) 0%, transparent 45%),
+                radial-gradient(circle at 85% 30%, rgba(190, 24, 93, 0.16) 0%, transparent 50%),
+                radial-gradient(circle at 50% 85%, rgba(88, 28, 135, 0.22) 0%, transparent 55%);
+            color: #fdf8f8;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Kart Tasarımı */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.035);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(232, 180, 184, 0.16);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-card-hover {
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .glass-card-hover:hover {
+            transform: translateY(-4px);
+            border-color: rgba(232, 180, 184, 0.38);
+            box-shadow: 0 25px 60px rgba(159, 18, 57, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        }
+
+        /* Gül Kurusu & Altın Işıltılı Metin */
+        .text-rosegold-gradient {
+            background: linear-gradient(135deg, #f9e2e4 0%, #e8b4b8 45%, #f3d2b3 75%, #f9e2e4 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Zarf Açılış Animasyonu */
+        .envelope-flap {
+            transform-origin: top center;
+            transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .envelope-open .envelope-flap {
+            transform: rotateX(180deg);
+        }
+
+        /* Uçuşan Parçacıklar ve Kalpler */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .floating-burst-heart {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            animation: burstUp var(--duration, 3s) cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes burstUp {
+            0% {
+                opacity: 1;
+                transform: translate(0, 0) scale(0.5) rotate(0deg);
+            }
+            50% {
+                opacity: 0.95;
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--tx, 0px), var(--ty, -350px)) scale(var(--scale, 1.3)) rotate(var(--rot, 25deg));
+            }
+        }
+
+        /* Zaman Tüneli Dikey Çizgisi */
+        .timeline-line {
+            background: linear-gradient(to bottom, transparent, rgba(232, 180, 184, 0.45) 15%, rgba(232, 180, 184, 0.45) 85%, transparent);
+        }
+    </style>
+</head>
+<body class="font-sans antialiased selection:bg-rose-500/30 selection:text-rose-100">
+
+    <!-- Arka Plan Yıldız ve Kalp Parçacıkları Canvas -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Sağ Üst Yüzen Müzik Kutusu Kontrolü (Harici MP3 gerektirmez, Web Audio API piyano melodisi) -->
+    <div class="fixed top-4 right-4 z-50 flex items-center gap-2">
+        <button id="music-toggle" onclick="toggleMusicBox()" aria-label="Müziği Aç veya Kapat"
+            class="glass-card px-3.5 py-2 rounded-full flex items-center gap-2 text-xs sm:text-sm text-rose-100/90 hover:text-white hover:border-rose-300/40 transition-all cursor-pointer shadow-lg">
+            <span id="music-icon" class="relative flex h-2.5 w-2.5">
+                <span id="music-ping" class="hidden animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                <span id="music-dot" class="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-300/50"></span>
+            </span>
+            <span id="music-label">Müzik Kutusu</span>
+        </button>
+    </div>
+
+    <!-- =====================================================================
+         1. AÇILIŞ EKRANI (ZARF & KARŞILAMA OVERLAY)
+    ====================================================================== -->
+    <div id="intro-overlay" class="fixed inset-0 z-40 flex flex-col items-center justify-center px-6 bg-[#090712]/95 backdrop-blur-xl transition-all duration-1000">
+        <div class="max-w-md w-full text-center space-y-8">
+            <div class="inline-block px-4 py-1.5 rounded-full border border-rose-300/20 bg-rose-500/5 text-rose-200/80 text-xs tracking-[0.25em] uppercase">
+                27 Ekim 2026
+            </div>
+
+            <div class="space-y-3">
+                <h1 class="font-serif text-4xl sm:text-5xl font-semibold text-rosegold-gradient tracking-tight">
+                    Kayra'ya Özel
+                </h1>
+                <p class="text-rose-100/70 text-sm sm:text-base font-light leading-relaxed">
+                    Senin için küçük ama kalbimden gelen bir dünya hazırladım...
+                </p>
+            </div>
+
+            <!-- Etkileşimli Zarf Kartı -->
+            <div class="pt-2 flex flex-col items-center">
+                <button id="open-envelope-btn" onclick="openLoveSite()" 
+                    class="group relative w-64 h-40 rounded-2xl glass-card flex flex-col items-center justify-center cursor-pointer overflow-hidden transition-all duration-500 hover:scale-105 hover:border-rose-300/50 shadow-2xl">
+                    <!-- Zarf Üst Kapağı Efekti -->
+                    <div class="envelope-flap absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-rose-400/20 to-transparent border-b border-rose-300/20 rounded-t-2xl"></div>
+                    
+                    <!-- Mühür Kalp -->
+                    <div class="relative z-10 w-12 h-12 rounded-full bg-gradient-to-br from-rose-400 to-rose-700 flex items-center justify-center shadow-lg shadow-rose-900/50 group-hover:scale-110 transition-transform duration-300">
+                        <svg class="w-6 h-6 text-white fill-current" viewBox="0 0 24 24">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                    </div>
+                    <span class="relative z-10 mt-3 text-xs tracking-widest uppercase text-rose-200/90 font-medium group-hover:text-white">
+                        Mektubu Aç
+                    </span>
+                </button>
+                <p class="mt-4 text-[11px] text-rose-200/40">
+                    (Açtığında hafif bir melodi eşlik edecek)
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         ANA İÇERİK ALANI
+    ====================================================================== -->
+    <main id="main-content" class="relative z-10 opacity-0 transition-opacity duration-1000">
+
+        <!-- HERO BÖLÜMÜ -->
+        <section class="min-h-screen flex flex-col items-center justify-center px-5 py-20 text-center relative">
+            <div class="max-w-3xl mx-auto space-y-6">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-card text-xs sm:text-sm text-rose-200/90 tracking-wider">
+                    <span>Mirza</span>
+                    <span class="text-rose-400 animate-pulse">❤️</span>
+                    <span>Kayra</span>
+                </div>
+
+                <h1 class="font-serif text-4xl sm:text-6xl md:text-7xl font-bold leading-tight text-rosegold-gradient animate-shimmer">
+                    İyi ki Varsın, Kayra
+                </h1>
+
+                <p class="font-serif italic text-lg sm:text-2xl text-rose-100/80 max-w-xl mx-auto leading-relaxed">
+                    "Hayatıma girdiğin o günden beri her anım daha anlamlı, her gülüşüm seninle güzel."
+                </p>
+
+                <!-- CANLI İLİŞKİ SAYACI (27 EKİM 2026) -->
+                <div class="pt-6">
+                    <p id="timer-subtitle" class="text-xs sm:text-sm uppercase tracking-[0.2em] text-rose-300/75 mb-4">
+                        27 Ekim 2026'dan Beri Birlikte Geçen Zamanımız
+                    </p>
+                    
+                    <div class="grid grid-cols-4 gap-2.5 sm:gap-4 max-w-xl mx-auto">
+                        <div class="glass-card rounded-2xl p-3 sm:p-5 flex flex-col items-center justify-center">
+                            <span id="days" class="font-serif text-2xl sm:text-4xl md:text-5xl font-bold text-white">0</span>
+                            <span class="text-[11px] sm:text-xs uppercase tracking-widest text-rose-200/70 mt-1">Gün</span>
+                        </div>
+                        <div class="glass-card rounded-2xl p-3 sm:p-5 flex flex-col items-center justify-center">
+                            <span id="hours" class="font-serif text-2xl sm:text-4xl md:text-5xl font-bold text-white">00</span>
+                            <span class="text-[11px] sm:text-xs uppercase tracking-widest text-rose-200/70 mt-1">Saat</span>
+                        </div>
+                        <div class="glass-card rounded-2xl p-3 sm:p-5 flex flex-col items-center justify-center">
+                            <span id="minutes" class="font-serif text-2xl sm:text-4xl md:text-5xl font-bold text-white">00</span>
+                            <span class="text-[11px] sm:text-xs uppercase tracking-widest text-rose-200/70 mt-1">Dakika</span>
+                        </div>
+                        <div class="glass-card rounded-2xl p-3 sm:p-5 flex flex-col items-center justify-center border-rose-400/30">
+                            <span id="seconds" class="font-serif text-2xl sm:text-4xl md:text-5xl font-bold text-rosegold">00</span>
+                            <span class="text-[11px] sm:text-xs uppercase tracking-widest text-rose-200/70 mt-1">Saniye</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Aşağı Kaydır Yönlendirmesi -->
+                <div class="pt-10">
+                    <a href="#mektup" class="inline-flex flex-col items-center gap-2 text-rose-200/60 hover:text-rose-200 transition-colors">
+                        <span class="text-xs tracking-widest uppercase">Sana Yazdıklarım</span>
+                        <svg class="w-5 h-5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             ÖZEL AŞK MEKTUBU BÖLÜMÜ
+        ================================================================== -->
+        <section id="mektup" class="py-20 px-5">
+            <div class="max-w-2xl mx-auto">
+                <div class="glass-card rounded-3xl p-7 sm:p-12 relative overflow-hidden">
+                    <!-- Köşe Dekoratif Işık -->
+                    <div class="absolute -top-20 -right-20 w-48 h-48 bg-rose-500/15 rounded-full blur-3xl pointer-events-none"></div>
+                    <div class="absolute -bottom-20 -left-20 w-48 h-48 bg-amber-300/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                    <div class="flex items-center justify-between border-b border-rose-200/15 pb-5 mb-7">
+                        <div>
+                            <span class="text-xs uppercase tracking-[0.2em] text-rose-300/70">Kalbimden Satırlar</span>
+                            <h2 class="font-serif text-2xl sm:text-3xl text-white mt-1">Canım Sevgilim Kayra,</h2>
+                        </div>
+                        <span class="text-2xl">💌</span>
+                    </div>
+
+                    <div class="space-y-5 text-rose-100/85 text-sm sm:text-base leading-relaxed font-light">
+                        <p>
+                            Bazen kelimeler içimde sana karşı büyüyen hisleri anlatmaya yetmiyor. 27 Ekim 2026 hayatımın en güzel dönüm noktası oldu; çünkü o gün seninle "biz" olduk.
+                        </p>
+                        <p>
+                            Gülüşündeki o içtenlik, sesindeki huzur ve varlığınla en sıradan günümü bile özel kılman benim için dünyadaki her şeyden daha değerli. Yanındayken zamanın nasıl geçtiğini anlamıyor, uzaktayken bile aklımda ve kalbimde hep seni taşıyorum.
+                        </p>
+                        <p>
+                            Bu küçük sayfayı sadece bugün için değil; ne zaman kendini özlenmiş, yorgun ya da mutlu hissetsen girip seni ne kadar çok sevdiğimi hatırla diye hazırladım. İyi ki hayatımdasın, iyi ki benimsin.
+                        </p>
+                    </div>
+
+                    <div class="mt-9 pt-6 border-t border-rose-200/15 flex items-end justify-between">
+                        <div class="text-xs text-rose-200/50">
+                            27.10.2026 — Sonsuza dek
+                        </div>
+                        <div class="text-right">
+                            <p class="text-xs text-rose-200/70 italic">Sonsuz sevgimle,</p>
+                            <p class="font-serif text-2xl sm:text-3xl text-rosegold-gradient font-semibold mt-0.5">Mirza</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             ETKİLEŞİMLİ "SENİ SEVMEMİN SEBEPLERİ" KAVANOZU
+        ================================================================== -->
+        <section id="sebepler" class="py-20 px-5">
+            <div class="max-w-2xl mx-auto text-center space-y-6">
+                <div class="space-y-2">
+                    <span class="text-xs uppercase tracking-[0.25em] text-rose-300/75">Sana Özel Notlar</span>
+                    <h2 class="font-serif text-3xl sm:text-4xl font-semibold text-white">Seni Sevmemin Sebepleri</h2>
+                    <p class="text-rose-100/65 text-sm max-w-md mx-auto">
+                        Aşağıdaki karta her dokunduğunda seninle ilgili sevdiğim başka bir detayı göreceksin.
+                    </p>
+                </div>
+
+                <!-- Etkileşimli Not Kartı -->
+                <div class="pt-4">
+                    <div id="reason-card" onclick="nextLoveReason()" 
+                        class="glass-card glass-card-hover rounded-3xl p-8 sm:p-12 min-h-[220px] flex flex-col items-center justify-center cursor-pointer relative group select-none">
+                        
+                        <span id="reason-counter" class="absolute top-5 right-6 text-xs font-mono text-rose-300/60">
+                            1 / 12
+                        </span>
+
+                        <div class="w-10 h-10 rounded-full bg-rose-400/10 border border-rose-300/20 flex items-center justify-center mb-4 text-rose-300 group-hover:scale-110 transition-transform">
+                            ✨
+                        </div>
+
+                        <p id="reason-text" class="font-serif text-xl sm:text-2xl text-rose-50 leading-relaxed transition-all duration-300">
+                            "Gözlerinin içi gülerek bana baktığın o an, dünyadaki bütün dertlerimi unutturuyor."
+                        </p>
+
+                        <span class="mt-6 text-xs uppercase tracking-widest text-rose-300/60 group-hover:text-rose-200 transition-colors">
+                            Yeni bir sebep için dokun →
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             BİZİM HİKAYEMİZ & ANILARIMIZ (ZAMAN TÜNELİ)
+        ================================================================== -->
+        <section id="hikayemiz" class="py-20 px-5">
+            <div class="max-w-3xl mx-auto">
+                <div class="text-center space-y-2 mb-14">
+                    <span class="text-xs uppercase tracking-[0.25em] text-rose-300/75">Zaman Tünelimiz</span>
+                    <h2 class="font-serif text-3xl sm:text-4xl font-semibold text-white">Bizim Hikayemiz</h2>
+                    <p class="text-rose-100/65 text-sm">Birlikte biriktirdiğimiz ve biriktireceğimiz en güzel anlar...</p>
+                </div>
+
+                <!-- Zaman Tüneli Konteyneri (JS ile dinamik doldurulur, kolayca düzenlenebilir) -->
+                <div class="relative">
+                    <!-- Orta / Sol Dikey Çizgi -->
+                    <div class="timeline-line absolute left-4 sm:left-1/2 top-0 bottom-0 w-px -translate-x-1/2"></div>
+
+                    <div id="timeline-container" class="space-y-10">
+                        <!-- Anı kartları JavaScript'teki `MEMORIES` dizisinden otomatik oluşturulur -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             SÜRPRİZ ETKİLEŞİM & KALP YAĞMURU BÖLÜMÜ
+        ================================================================== -->
+        <section class="py-24 px-5 text-center">
+            <div class="max-w-xl mx-auto glass-card rounded-3xl p-8 sm:p-12 space-y-6 relative overflow-hidden">
+                <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-rose-400/20 to-amber-300/20 border border-rose-300/30 text-2xl animate-float">
+                    💖
+                </div>
+
+                <h3 class="font-serif text-2xl sm:text-3xl text-white">
+                    Küçük Bir Sürpriz İster Misin?
+                </h3>
+
+                <p id="surprise-message" class="text-rose-100/80 text-sm sm:text-base min-h-[48px] flex items-center justify-center transition-all duration-300">
+                    Butona her bastığında sana olan sevgim gökyüzüne karışsın...
+                </p>
+
+                <div class="pt-2">
+                    <button onclick="triggerHeartShower(event)" 
+                        class="px-8 py-4 rounded-full bg-gradient-to-r from-rose-500 via-pink-600 to-rose-500 text-white font-medium text-sm sm:text-base tracking-wide shadow-lg shadow-rose-900/50 hover:shadow-rose-600/40 hover:scale-105 active:scale-95 transition-all cursor-pointer">
+                        Kalbine Dokun ✨
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="py-10 px-5 text-center border-t border-rose-200/10 text-rose-200/50 text-xs space-y-2">
+            <p class="font-serif text-base text-rose-200/80">Mirza ❤️ Kayra</p>
+            <p>27 Ekim 2026'dan sonsuzluğa... Sevgiyle hazırlandı.</p>
+        </footer>
+
+    </main>
+
+    <!-- =====================================================================
+         JAVASCRIPT: KOLAYCA DÜZENLENEBİLİR VERİLER VE ETKİLEŞİMLER
+    ====================================================================== -->
+    <script>
+        /* =================================================================
+           1. ÖZELLEŞTİRİLEBİLİR VERİLER (Burayı istediğin gibi düzenleyebilirsin)
+        ================================================================= */
+        
+        // Sevgililik Başlangıç Tarihi (Yıl, Ay-1 [Ocak=0, Ekim=9], Gün, Saat, Dakika, Saniye)
+        const RELATIONSHIP_START = new Date(2026, 9, 27, 0, 0, 0);
+
+        // "Seni Sevmemin Sebepleri" Kart Notları (İstediğin kadar ekleyip çıkarabilirsin)
+        const LOVE_REASONS = [
+            "Gözlerinin içi gülerek bana baktığın o an, dünyadaki bütün dertlerimi unutturuyor.",
+            "Sesini duyduğum anda içime dolan o tarif edilemez huzur.",
+            "En sıradan anı bile seninle yaşayınca unutulmaz bir anıya dönüşmesi.",
+            "Kalbinin güzelliği, inceliğin ve her şeye sevgiyle yaklaşman.",
+            "Yanındayken kendim olabilmem ve hiçbir şeye rol yapmak zorunda kalmamam.",
+            "Bana her baktığında kendimi dünyanın en şanslı insanı gibi hissettirmen.",
+            "Küçük detaylara verdiğin değer ve beni her halimle anlaman.",
+            "Seninle geleceğe dair hayaller kurmanın bile bana mutluluk vermesi.",
+            "Zor bir günün sonunda sadece varlığınla bile bana iyi gelmen.",
+            "Gülüşünün hem yüzüme hem kalbime ışık olması.",
+            "27 Ekim 2026'dan beri hayatımın en güzel hikayesini seninle yazıyor olmam.",
+            "Çünkü sen Kayra'sın; başka hiçbir sebebe bile gerek yok."
+        ];
+
+        // "Bizim Hikayemiz" Zaman Tüneli Kartları (İleride yeni tarihler ve fotoğraflar ekleyebilirsin)
+        const MEMORIES = [
+            {
+                date: "27 Ekim 2026",
+                title: "Hikayemizin Başladığı Gün",
+                description: "Hayatımın en güzel 'evet'i, en güzel başlangıcı. O günden beri takvimdeki her yaprak seninle daha anlamlı.",
+                icon: "❤️",
+                highlight: true
+            },
+            {
+                date: "İlk Buluşmamız",
+                title: "Zamanın Durduğu An",
+                description: "Heyecandan kalbimin hızla attığı, gözlerine baktığımda ise her şeyin yerli yerine oturduğu o eşsiz gün.",
+                icon: "☕",
+                highlight: false
+            },
+            {
+                date: "En Güzel Gülüşün",
+                title: "Aklımdan Çıkmayan O Kare",
+                description: "Kahkahalarının etrafı aydınlattığı, senin mutluluğunla benim de dünyalar kadar mutlu olduğum anlar.",
+                icon: "✨",
+                highlight: false
+            },
+            {
+                date: "Geleceğimiz...",
+                title: "Birlikte Yazacağımız Nice Sayfalar",
+                description: "Daha gezeceğimiz çok yer, kutlayacağımız çok yıldönümü ve birlikte yaşlanacağımız güzel günler var.",
+                icon: "♾️",
+                highlight: false
+            }
+        ];
+
+        // Sürpriz Buton Mesajları
+        const SURPRISE_MESSAGES = [
+            "Seni kelimelerin anlatabileceğinden çok daha fazla seviyorum Kayra! ❤️",
+            "Bugün, yarın ve her zaman kalbim seninle...",
+            "İyi ki hayatımdasın sevgilim, sen benim en güzel şansımsın ✨",
+            "Gülüşün hiç solmasın, ben hep yanındayım 💖",
+            "27 Ekim 2026'dan sonsuzluğa kadar seninle..."
+        ];
+
+        /* =================================================================
+           2. SAYFA AÇILIŞI & ZARF ETKİLEŞİMİ
+        ================================================================= */
+        function openLoveSite() {
+            const btn = document.getElementById('open-envelope-btn');
+            const overlay = document.getElementById('intro-overlay');
+            const main = document.getElementById('main-content');
+
+            // Zarf kapağı animasyonu
+            btn.classList.add('envelope-open');
+
+            // Hafif piyano müzik kutusunu başlat (kullanıcı etkileşimiyle tarayıcı izin verir)
+            startMusicBox();
+
+            // Kalp patlaması efekti
+            createHeartBurst(window.innerWidth / 2, window.innerHeight / 2, 24);
+
+            // Overlay'i yumuşakça gizle ve ana içeriği göster
+            setTimeout(() => {
+                overlay.style.opacity = '0';
+                overlay.style.pointerEvents = 'none';
+                main.style.opacity = '1';
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                }, 900);
+            }, 450);
+        }
+
+        /* =================================================================
+           3. CANLI İLİŞKİ SAYACI (27 EKİM 2026)
+        ================================================================= */
+        function updateRelationshipTimer() {
+            const now = new Date();
+            let diff = now - RELATIONSHIP_START;
+            const subtitleEl = document.getElementById('timer-subtitle');
+
+            // Eğer sistem saati 27 Ekim 2026'dan önceyse geri sayım, sonraysa geçen süre olarak akıllıca göster
+            if (diff < 0) {
+                diff = Math.abs(diff);
+                subtitleEl.textContent = "27 Ekim 2026'ya Kalan Süremiz";
+            } else {
+                subtitleEl.textContent = "27 Ekim 2026'dan Beri Birlikte Geçen Zamanımız";
+            }
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const minutes = Math.floor((diff / 1000 / 60) % 60);
+            const seconds = Math.floor((diff / 1000) % 60);
+
+            document.getElementById('days').textContent = days;
+            document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+            document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+            document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+        }
+
+        setInterval(updateRelationshipTimer, 1000);
+        updateRelationshipTimer();
+
+        /* =================================================================
+           4. "SENİ SEVMEMİN SEBEPLERİ" KART ETKİLEŞİMİ
+        ================================================================= */
+        let currentReasonIndex = 0;
+
+        function nextLoveReason() {
+            const textEl = document.getElementById('reason-text');
+            const counterEl = document.getElementById('reason-counter');
+            const cardEl = document.getElementById('reason-card');
+
+            // Kısa geçiş animasyonu
+            textEl.style.opacity = '0';
+            textEl.style.transform = 'translateY(8px)';
+
+            // Kart tıklamasında mini kalp çıkar
+            const rect = cardEl.getBoundingClientRect();
+            createHeartBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, 6);
+
+            setTimeout(() => {
+                currentReasonIndex = (currentReasonIndex + 1) % LOVE_REASONS.length;
+                textEl.textContent = `"${LOVE_REASONS[currentReasonIndex]}"`;
+                counterEl.textContent = `${currentReasonIndex + 1} / ${LOVE_REASONS.length}`;
+                
+                textEl.style.opacity = '1';
+                textEl.style.transform = 'translateY(0)';
+            }, 220);
+        }
+
+        /* =================================================================
+           5. ZAMAN TÜNELİNİ OLUŞTURMA
+        ================================================================= */
+        function renderTimeline() {
+            const container = document.getElementById('timeline-container');
+            container.innerHTML = MEMORIES.map((item, idx) => {
+                const isEven = idx % 2 === 0;
+                return `
+                    <div class="relative flex flex-col sm:flex-row items-start sm:items-center ${isEven ? 'sm:flex-row-reverse' : ''} gap-6 pl-10 sm:pl-0">
+                        <!-- Orta Nokta İkonu -->
+                        <div class="absolute left-4 sm:left-1/2 -translate-x-1/2 w-8 h-8 rounded-full ${item.highlight ? 'bg-gradient-to-br from-rose-400 to-rose-700 shadow-lg shadow-rose-500/40' : 'bg-[#170d1f] border border-rose-300/40'} flex items-center justify-center text-xs z-10">
+                            ${item.icon}
+                        </div>
+
+                        <!-- Kart İçeriği -->
+                        <div class="w-full sm:w-[calc(50%-2rem)]">
+                            <div class="glass-card glass-card-hover rounded-2xl p-6 text-left ${item.highlight ? 'border-rose-400/40 bg-rose-500/[0.06]' : ''}">
+                                <span class="inline-block text-xs font-medium tracking-wider uppercase text-rosegold mb-1.5">
+                                    ${item.date}
+                                </span>
+                                <h3 class="font-serif text-xl text-white font-semibold mb-2">
+                                    ${item.title}
+                                </h3>
+                                <p class="text-rose-100/75 text-sm leading-relaxed font-light">
+                                    ${item.description}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        renderTimeline();
+
+        /* =================================================================
+           6. SÜRPRİZ KALP YAĞMURU EFEKTİ
+        ================================================================= */
+        let surpriseIdx = 0;
+
+        function triggerHeartShower(event) {
+            const msgEl = document.getElementById('surprise-message');
+            msgEl.style.opacity = '0';
+            
+            setTimeout(() => {
+                msgEl.textContent = SURPRISE_MESSAGES[surpriseIdx];
+                msgEl.style.opacity = '1';
+                surpriseIdx = (surpriseIdx + 1) % SURPRISE_MESSAGES.length;
+            }, 180);
+
+            const x = event ? event.clientX : window.innerWidth / 2;
+            const y = event ? event.clientY : window.innerHeight / 2;
+            createHeartBurst(x, y, 28);
+        }
+
+        function createHeartBurst(originX, originY, count = 18) {
+            const symbols = ['❤️', '💖', '✨', '🌸', '💕'];
+            for (let i = 0; i < count; i++) {
+                const el = document.createElement('div');
+                el.className = 'floating-burst-heart select-none';
+                el.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                el.style.left = `${originX}px`;
+                el.style.top = `${originY}px`;
+                el.style.fontSize = `${Math.random() * 16 + 14}px`;
+
+                const tx = (Math.random() - 0.5) * 320;
+                const ty = -120 - Math.random() * 280;
+                const rot = (Math.random() - 0.5) * 90;
+                const scale = 0.8 + Math.random() * 0.9;
+                const duration = 1.8 + Math.random() * 1.4;
+
+                el.style.setProperty('--tx', `${tx}px`);
+                el.style.setProperty('--ty', `${ty}px`);
+                el.style.setProperty('--rot', `${rot}deg`);
+                el.style.setProperty('--scale', scale);
+                el.style.setProperty('--duration', `${duration}s`);
+
+                document.body.appendChild(el);
+                setTimeout(() => el.remove(), duration * 1000);
+            }
+        }
+
+        /* =================================================================
+           7. WEB AUDIO API ROMANTİK MÜZİK KUTUSU (MP3 Gerektirmez)
+        ================================================================= */
+        let audioCtx = null;
+        let isPlayingMusic = false;
+        let melodyInterval = null;
+
+        // Yumuşak romantik arpej notaları (Fmaj7 - Cmaj7 - Dm7 - Bbmaj7)
+        const MELODY_NOTES = [
+            349.23, 440.00, 523.25, 659.25, // Fmaj7
+            261.63, 329.63, 392.00, 493.88, // Cmaj7
+            293.66, 349.23, 440.00, 523.25, // Dm7
+            233.08, 293.66, 349.23, 440.00  // Bbmaj7
+        ];
+        let noteStep = 0;
+
+        function playMusicBoxNote(freq) {
+            if (!audioCtx || !isPlayingMusic) return;
+            const now = audioCtx.currentTime;
+            
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, now);
+
+            gain.gain.setValueAtTime(0.0001, now);
+            gain.gain.exponentialRampToValueAtTime(0.045, now + 0.06);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.8);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start(now);
+            osc.stop(now + 1.9);
+        }
+
+        function startMusicBox() {
+            if (isPlayingMusic) return;
+            try {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                isPlayingMusic = true;
+                updateMusicUI();
+
+                playMusicBoxNote(MELODY_NOTES[noteStep]);
+                noteStep = (noteStep + 1) % MELODY_NOTES.length;
+
+                melodyInterval = setInterval(() => {
+                    playMusicBoxNote(MELODY_NOTES[noteStep]);
+                    noteStep = (noteStep + 1) % MELODY_NOTES.length;
+                }, 650);
+            } catch (e) {
+                console.warn('Ses başlatılamadı:', e);
+            }
+        }
+
+        function stopMusicBox() {
+            isPlayingMusic = false;
+            if (melodyInterval) {
+                clearInterval(melodyInterval);
+                melodyInterval = null;
+            }
+            updateMusicUI();
+        }
+
+        function toggleMusicBox() {
+            if (isPlayingMusic) {
+                stopMusicBox();
+            } else {
+                startMusicBox();
+            }
+        }
+
+        function updateMusicUI() {
+            const ping = document.getElementById('music-ping');
+            const dot = document.getElementById('music-dot');
+            const label = document.getElementById('music-label');
+
+            if (isPlayingMusic) {
+                ping.classList.remove('hidden');
+                dot.classList.remove('bg-rose-300/50');
+                dot.classList.add('bg-rose-400');
+                label.textContent = 'Melodi Açık';
+            } else {
+                ping.classList.add('hidden');
+                dot.classList.remove('bg-rose-400');
+                dot.classList.add('bg-rose-300/50');
+                label.textContent = 'Müzik Kutusu';
+            }
+        }
+
+        /* =================================================================
+           8. ARKA PLAN YILDIZ & SÜZÜLEN IŞIK PARÇACIKLARI (CANVAS)
+        ================================================================= */
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function initParticles() {
+            particles = [];
+            const count = Math.min(65, Math.floor(window.innerWidth / 22));
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    radius: Math.random() * 1.8 + 0.5,
+                    speedY: - (Math.random() * 0.25 + 0.08),
+                    speedX: (Math.random() - 0.5) * 0.15,
+                    alpha: Math.random() * 0.6 + 0.2,
+                    isRose: Math.random() > 0.65
+                });
+            }
+        }
+        initParticles();
+
+        function animateBackground() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (const p of particles) {
+                p.y += p.speedY;
+                p.x += p.speedX;
+
+                if (p.y < -10) {
+                    p.y = canvas.height + 10;
+                    p.x = Math.random() * canvas.width;
+                }
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = p.isRose 
+                    ? `rgba(232, 180, 184, ${p.alpha})` 
+                    : `rgba(255, 248, 240, ${p.alpha * 0.8})`;
+                ctx.fill();
+            }
+            requestAnimationFrame(animateBackground);
+        }
+        animateBackground();
+    </script>
+</body>
+</html>
